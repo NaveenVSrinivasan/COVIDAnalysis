@@ -8,7 +8,7 @@ EMBEDDING_TYPE = "SCIBERT"
 
 LOAD = False #Whether to build embeddings, or load them
 WRITE_FILE = "scibert_embeds_biorxiv_medrxiv_biorxiv_medrxiv.json" #Place to save/load embeddings
-abstracts = extract_abstracts('../data/biorxiv_medrxiv/biorxiv_medrxiv')[:100] #Directory from which to load abstracts
+abstracts = extract_abstracts('../data/biorxiv_medrxiv/biorxiv_medrxiv') #Directory from which to load abstracts
 
 if LOAD:
     with open(WRITE_FILE,"r") as json_file:
