@@ -4,7 +4,22 @@ import nltk.data
 from transformers import *
 
 
-def extract_abstracts(directory, remove_ints=False, use_titles = True):
+def extract_titles(directory):
+    """
+    :param directory: directory to recursively find json files
+    :return: list of abstracts split by sentence
+    """
+    titles = []
+
+    for file in sorted(list(glob.glob(directory+'**/*.json', recursive=True))):
+        paper_data = json.load(open(file))               # <-- Things done for each file
+        title = paper_data['metadata']['title']
+        if len(title.split()) > 0:
+            titles.append([title])
+    return titles
+
+
+def extract_abstracts(directory, remove_ints=False, use_titles=True):
     """
     :param directory: directory to recursively find json files
     :param remove_ints: optional argument to remove digits and websites
@@ -35,16 +50,9 @@ def extract_abstracts(directory, remove_ints=False, use_titles = True):
     return abstracts
 
 
-def extract_titles(directory):
-    """
-    :param directory: directory to recursively find json files
-    :return: list of abstracts split by sentence
-    """
-    titles = []
+def extract_body_text(directory, remove_ints=False, use_abstracts=True):
+    pass
 
-    for file in sorted(list(glob.glob(directory+'**/*.json', recursive=True))):
-        paper_data = json.load(open(file))               # <-- Things done for each file
-        title = paper_data['metadata']['title']
-        if len(title.split()) > 0:
-            titles.append([title])
-    return titles
+
+def extract_all_paragraphs(directory, remove_ints=False):
+    pass
