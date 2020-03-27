@@ -65,34 +65,32 @@ def build_scibert_embeds_tf_idf(abstracts):
     X = vectorizer.fit_transform(corpus)
     words_to_index = {w:i for i,w in enumerate(vectorizer.get_feature_names())}  
     with tqdm(total=len(abstracts)) as pbar:
-	    for tfidf_score,text in tqdm(zip(X,abstracts)):
-	        tfidf_score = tfidf_score.toarray()
-	        for sentence in text:
-	            tokenized = tokenizer.tokenize(sentence)
-	            weights = []
-	            for w in tokenized:
-	            	if w in words_to_index:
-	            		weights.append(tfidf_score[0][words_to_index[w]])
-	            	else:
-	            	    weights.append(0.0)
+        for tfidf_score,text in tqdm(zip(X,abstracts)):
+            tfidf_score = tfidf_score.toarray()
+            for sentence in text:
+                tokenized = tokenizer.tokenize(sentence)
+                weights = []
+                for w in tokenized:
+                    if w in words_to_index:
+                        weights.append(tfidf_score[0][words_to_index[w]])
+                    else:
+                        weights.append(0.0)
 
 
 
-	            weights = torch.tensor(weights)
-	            weights = weights / torch.sum(weights) if torch.sum(weights) > 0 else weights
+                weights = torch.tensor(weights)
+                weights = weights / torch.sum(weights) if torch.sum(weights) > 0 else weights
 
-	            print(weights)
-	   
-	            hidden_states,cls_emb = model(torch.tensor([tokenizer.encode(sentence,add_special_tokens=False)]))
-	            # print(hidden_states.size())
-	            # print(weights.size())
+                print(weights)
 
+                hidden_states,cls_emb = model(torch.tensor([tokenizer.encode(sentence,add_special_tokens=False)]))
+                # print(hidden_states.size())
+                # print(weights.size())
 
-	            new_hidden_states = torch.mm(hidden_states.permute((0,2,1)).squeeze(0),weights.reshape(-1,1))
-	            all_sentence_embeds.append(new_hidden_states.view(-1).data.numpy())
-	        pbar.update(1)
+                new_hidden_states = torch.mm(hidden_states.permute((0,2,1)).squeeze(0),weights.reshape(-1,1))
+                all_sentence_embeds.append(new_hidden_states.view(-1).data.numpy())
+            pbar.update(1)
 
     text_to_embeddings = {" ".join(a):v for a,v in zip(abstracts,all_sentence_embeds)}
 
     return text_to_embeddings
-
