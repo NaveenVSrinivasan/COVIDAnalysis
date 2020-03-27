@@ -1,56 +1,101 @@
-from abstract_embed import *
-from visualize_embeddings import *
+from argparse import ArgumentParser
+
+from build_embedding_functions import *
+from text_extraction_functions import *
+from visualize_embedding_functions import *
 import json
 
 
-EMBEDDING_TYPE = "SCIBERT"
-# EMBEDDING_TYPE = "SCIBERT_TF_IDF"
+class Embedding(Enum):
+    SCIBERT = "SCIBERT"
+    SCIBERT_TFIDF = "SCIBERT_TF_IDF"
+    TFIDF = "TFIDF"
 
-LOAD = False #Whether to build embeddings, or load them
 
-USE_TITLES = False
-WRITE_FILE = "scibert_embeds_all" #Place to save/load embeddings. 
-abstracts = extract_abstracts('../data/biorxiv_medrxiv/biorxiv_medrxiv',remove_ints=True) #Directory from which to load abstracts
-titles = extract_titles('../data/biorxiv_medrxiv/biorxiv_medrxiv') #Directory from which to load abstracts
-		
-# abstracts = extract_abstracts('../data/*/*',remove_ints=True) #Directory from which to load abstracts
-# titles = extract_titles('../data/*/*') #Directory from which to load abstracts
+class Text(Enum):
+    ABSTRACTS = "Abstracts"
+    TITLES = "Titles"
+    BODY_TEXTS = "Body_texts"
+    PARAGRAPHS = "Paragraphs"
 
-if USE_TITLES:
-    abstracts = titles
 
-if LOAD:
-    with open(WRITE_FILE,"r") as json_file:
-        text_to_embeddings = json.load(json_file)
-elif EMBEDDING_TYPE == "SCIBERT":
-    text_to_embeddings = build_scibert_embeds(abstracts)
-elif EMBEDDING_TYPE == "SCIBERT_TF_IDF":
-    text_to_embeddings = build_scibert_embeds_tf_idf(abstracts)
+if __name__ == "__main__":
+    parser = ArgumentParser()
 
-# interval = 1000
-# for start in range(0,10000,interval):
-#     text_to_embeddings = build_scibert_embeds(abstracts[start:start+interval])
+    parser.add_argument('--extraction_dir', '-extraction_dir',
+                        help='extraction directory',
+                        default='../../CORD-19-research-challenge/biorxiv_medrxiv/biorxiv_medrxiv',
+                        type=str)
 
-if not LOAD:
-    for k in text_to_embeddings.keys(): #write embeddings to list so they can be stored as json
-      text_to_embeddings[k] = text_to_embeddings[k].tolist()
+    parser.add_argument('--use_text', '-use_text',
+                        help='which text to extract to construct embeddings',
+                        default=Text.ABSTRACTS,
+                        type=Text)
 
-    with open(WRITE_FILE,"w+") as json_file: 
-        json.dump(text_to_embeddings,json_file)
+    parser.add_argument('--embedding_type', '-embedding_type',
+                        help='which embedding to use',
+                        default=Embedding.SCIBERT_TFIDF,
+                        type=Embedding)
 
-check_embeddings_for_NAN(text_to_embeddings) #remove any nans or infs in data
+    parser.add_argument('--load_file', '-load_file',
+                        help='whether to load existing embeddings',
+                        action='store_true')
 
-# run_elbow(text_to_embeddings)
-# num_clusters,value = calculate_num_clusters([v for _,v in text_to_embeddings.items()],kmax=30) #calculate the number of clusters using siloutte score
+    parser.add_argument('--write_file', '-write_file',
+                        help='to write computed embeddings',
+                        action='store_true')
 
-text,clusters = visualize_embeddings(text_to_embeddings,num_clusters=15,reduce_fn="TSNE",write_to_file=True,file_name='embeddings_all') #visualize embeddings and write the reduced data to tsv file for visualizer
-#To visualize, change file in visualizer to this file location
+    parser.add_argument('--embeddings_file', '-embeddings_file',
+                        help='file to write embeddings to',
+                        default='embeddings',
+                        type=str)
 
-extract_cluster_names(text,clusters)
-print_best_matches(text_to_embeddings) #for every abstract, print the best match
+    args = parser.parse_args()
+
+    # Load text to embeddings directly from embeddings file
+    if args.load_file:
+        with open(args.embeddings_file, "r") as json_file:
+            text_to_embeddings = json.load(json_file)
+
+    else:
+        # Retrieve texts
+        texts = None
+        if args.use_text == Text.ABSTRACTS:
+            texts = extract_abstracts(args.extraction_dir, remove_ints=True)
+        elif args.use_text == Text.TITLES:
+            texts = extract_titles(args.extraction_dir)
+
+        # Construct embeddings
+        text_to_embeddings = None
+        if args.embedding_type == Embedding.SCIBERT:
+            text_to_embeddings = build_scibert_embeds(texts)
+        elif args.embedding_type == Embedding.SCIBERT_TFIDF:
+            text_to_embeddings = build_scibert_embeds_tf_idf(texts)
+        elif args.embedding_type == Embedding.TFIDF:
+            text_to_embeddings = build_tfidf_embeds(texts)
+
+        # Write file
+        if args.write_file:
+            for k in text_to_embeddings.keys():  # write embeddings to list so they can be stored as json
+                text_to_embeddings[k] = text_to_embeddings[k].tolist()
+
+            with open(args.embeddings_file, "w+") as json_file:
+                json.dump(text_to_embeddings, json_file)
+
+    check_embeddings_for_NAN(text_to_embeddings) #remove any nans or infs in data
+
+    # run_elbow(text_to_embeddings)
+    # num_clusters,value = calculate_num_clusters([v for _,v in text_to_embeddings.items()],kmax=30) #calculate the number of clusters using siloutte score
+
+    text, clusters = visualize_embeddings(text_to_embeddings, num_clusters=15, reduce_fn=Reduction.TSNE,
+                                          write_to_file=False, file_name='embeddings_all') #visualize embeddings and write the reduced data to tsv file for visualizer
+    #To visualize, change file in visualizer to this file location
+
+    extract_cluster_names(text,clusters)
+    print_best_matches(text_to_embeddings) #for every abstract, print the best match
 
   
-# print(num_clusters,value)
+    # print(num_clusters,value)
 
 
 

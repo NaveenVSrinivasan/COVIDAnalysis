@@ -48,7 +48,7 @@ def visualize_embeddings(text_to_embedding, reduce_fn: Reduction, num_clusters, 
     text =  [k for k,_ in items]
     normalize = lambda v: v/np.linalg.norm(v) if np.sum(v) != 0 else v
     vector_representation =  [normalize(v) for _,v in items]
-    x,y = reduce_dims(vector_representation,type=reduce_fn)
+    x,y = reduce_dims(vector_representation,reduction=reduce_fn)
 
     labels = run_kmeans(vector_representation,num_clusters)
     # print(num)
