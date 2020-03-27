@@ -1,3 +1,4 @@
+import numpy as np
 import torch
 from tqdm import tqdm
 from transformers import *
@@ -16,7 +17,7 @@ def build_tfidf_embeds(abstracts):
 
     corpus = [" ".join([" ".join(tokenizer.tokenize(s)) for s in a]) for a in abstracts]
     X = vectorizer.fit_transform(corpus)
-    text_to_embeddings = {" ".join(a): v for a, v in zip(abstracts, X)}
+    text_to_embeddings = {" ".join(a): np.asarray(v).flatten() for a, v in zip(abstracts, X.todense())}
 
     return text_to_embeddings
 
