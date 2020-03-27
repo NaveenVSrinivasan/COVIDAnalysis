@@ -35,20 +35,20 @@ if not LOAD:
     for k in text_to_embeddings.keys(): #write embeddings to list so they can be stored as json
       text_to_embeddings[k] = text_to_embeddings[k].tolist()
 
-    with open(str(start)+"_"+WRITE_FILE,"w+") as json_file: 
+    with open(WRITE_FILE,"w+") as json_file: 
         json.dump(text_to_embeddings,json_file)
 
 check_embeddings_for_NAN(text_to_embeddings) #remove any nans or infs in data
 
 # run_elbow(text_to_embeddings)
+# num_clusters,value = calculate_num_clusters([v for _,v in text_to_embeddings.items()],kmax=30) #calculate the number of clusters using siloutte score
 
-text,clusters = visualize_embeddings(text_to_embeddings,reduce_fn="TSNE",write_to_file=True,file_name='embeddings_all') #visualize embeddings and write the reduced data to tsv file for visualizer
+text,clusters = visualize_embeddings(text_to_embeddings,num_clusters=15,reduce_fn="TSNE",write_to_file=True,file_name='embeddings_all') #visualize embeddings and write the reduced data to tsv file for visualizer
 #To visualize, change file in visualizer to this file location
 
 extract_cluster_names(text,clusters)
 print_best_matches(text_to_embeddings) #for every abstract, print the best match
 
-# num_clusters,value = calculate_num_clusters([v for _,v in text_to_embeddings.items()],kmax=15) #calculate the number of clusters using siloutte score
   
 # print(num_clusters,value)
 

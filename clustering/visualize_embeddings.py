@@ -29,14 +29,14 @@ def reduce_dims(embeddings,type="TSNE"):
     return x,y
 
 
-def visualize_embeddings(text_to_embedding,reduce_fn="TSNE",write_to_file=False,file_name="embeddings"):
+def visualize_embeddings(text_to_embedding,reduce_fn="TSNE",num_clusters,write_to_file=False,file_name="embeddings"):
     items = list(sorted(text_to_embedding.items()))
     text =  [k for k,_ in items]
     normalize = lambda v: v/np.linalg.norm(v) if np.sum(v) != 0 else v
     vector_representation =  [normalize(v) for _,v in items]
     x,y = reduce_dims(vector_representation,type=reduce_fn)
 
-    labels = run_kmeans(vector_representation,5)
+    labels = run_kmeans(vector_representation,num_clusters)
     # print(num)
 
     if write_to_file: 
