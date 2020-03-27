@@ -9,8 +9,13 @@ from  sklearn.decomposition import PCA
 from sklearn.metrics.pairwise import cosine_similarity
 from sklearn.manifold import TSNE
 from sklearn.cluster import KMeans
+from transformers import *
+from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics import silhouette_score
 from numpy import inf
+from nltk.corpus import stopwords
+
+
 
 def reduce_dims(embeddings,type="TSNE"):
     if type == "TSNE":
@@ -31,15 +36,20 @@ def visualize_embeddings(text_to_embedding,reduce_fn="TSNE",write_to_file=False,
     vector_representation =  [normalize(v) for _,v in items]
     x,y = reduce_dims(vector_representation,type=reduce_fn)
 
+    labels = run_kmeans(vector_representation,5)
+    # print(num)
+
     if write_to_file: 
         with open(file_name,"w",encoding="utf-8") as embedding_file:
-            embedding_file.write("text\tx\ty\n")
-            for a,x1,y1 in zip(text,x,y):
-                embedding_file.write(a+"\t{}\t{}\n".format(x1,y1))
+            embedding_file.write("text\tx\ty\tcluster\n")
+            for a,x1,y1,cluster in zip(text,x,y,labels):
+                embedding_file.write(a+"\t{}\t{}\t{}\n".format(x1,y1,cluster))
 
 
     plt.scatter(x,y)
     plt.show()
+
+    return text,labels
 
 def check_embeddings_for_NAN(text_to_embedding):
 
@@ -68,29 +78,50 @@ def calculate_num_clusters(embeddings,kmax=30):
       labels = kmeans.labels_
       sil.append((k,silhouette_score(embs, labels, metric = 'euclidean')))
 
+    print(sil)
     return max(sil,key=lambda x: x[1])
 
-def run_kmeans(text_to_embedding,n_clusters):
+def run_kmeans(embeddings,n_clusters):
+    kmeans = KMeans(n_clusters=n_clusters, random_state=0).fit(embeddings)
+    return kmeans.labels_
+    
+def run_elbow(text_to_embedding):
+    from sklearn.cluster import KMeans
+    from sklearn.datasets import make_blobs
+    from yellowbrick.cluster import KElbowVisualizer
+
     items = list(sorted(text_to_embedding.items()))
     text =  [k for k,_ in items]
-    vector_representation =  [v/np.linalg.norm(v) for _,v in items]
+    normalize = lambda v: v/np.linalg.norm(v) if np.sum(v) != 0 else v
+    vector_representation =  [normalize(v) for _,v in items]
 
-    kmeans = KMeans(n_clusters=num_clusters, random_state=0).fit(vector_representation)
-    word_2_cluster = {}
-    cluster_2_words = {}
-    for i,l in enumerate(kmeans.labels_):
-        word_2_cluster[" ".join(text[i])] = l
-        if l not in cluster_2_words: cluster_2_words[l] = []
-        cluster_2_words[l].append(" ".join(text[i]))
+    # Generate synthetic dataset with 8 random clusters
 
+    # Instantiate the clustering model and visualizer
+    model = KMeans()
+    visualizer = KElbowVisualizer(
+        model, k=(2,35), metric="silhouette", timings=False,locate_elbow=True
+    )
 
-    for k,v in cluster_2_words.items():
-        print(k)
-        for paper in v:
-            print(v)
+    visualizer.fit(vector_representation)        # Fit the data to the visualizer
+    visualizer.show() 
 
 
+def extract_cluster_names(text,labels):
+    label_to_all_text = {l:"" for l in labels}
+    for t,l in zip(text,labels):
+        label_to_all_text[l]+= " "+t
 
+    vectorizer = TfidfVectorizer(stop_words=stopwords.words('english'))
+    corpus = [t for _,t in sorted(label_to_all_text.items(),key=lambda x: x[0])]
+    labels = [label for label,_ in sorted(label_to_all_text.items(),key=lambda x: x[0])]
+    X = vectorizer.fit_transform(corpus)
 
+    words_to_index = {w:i for i,w in enumerate(vectorizer.get_feature_names())}  
+    all_words = vectorizer.get_feature_names()
 
+    for tfidf_score,l in tqdm(zip(X,labels)):
+            tfidf_score = np.reshape(tfidf_score.toarray(),(-1))
+            most_characteristic_words = sorted(all_words,key=lambda x: tfidf_score[words_to_index[x]],reverse=True)[:10]
+            print(most_characteristic_words)
 
