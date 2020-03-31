@@ -5,36 +5,57 @@ from transformers import *
 from sklearn.feature_extraction.text import TfidfVectorizer
 
 
-def build_tfidf_embeds(abstracts):
+def build_tfidf_embeds_paragraphs(paragraphs):
     """
-    :param abstracts: list of lists of sentences
-    :return: dictionary abstracts to tfidf embeddings
+    :param paragraphs: list of lists of sentences
+    :return: dictionary paragraphs to tfidf embeddings
     """
     tokenizer = AutoTokenizer.from_pretrained('allenai/scibert_scivocab_uncased')
     vectorizer = TfidfVectorizer()
 
-    print("Processing {} papers".format(len(abstracts)))
+    print("Processing {} papers".format(len(paragraphs)))
 
-    corpus = [" ".join([" ".join(tokenizer.tokenize(s)) for s in a]) for a in abstracts]
+    corpus = [" ".join(tokenizer.tokenize(s)) for s in a]
     X = vectorizer.fit_transform(corpus)
-    text_to_embeddings = {" ".join(a): np.asarray(v).flatten() for a, v in zip(abstracts, X.todense())}
+    text_to_embeddings = {" ".join(a): np.asarray(v).flatten() for a, v in zip(paragraphs, X.todense())}
 
     return text_to_embeddings
 
 
-def build_scibert_embeds(abstracts):
+def build_scibert_embeds_sentences(sentences):
     """
-    :param abstracts: list of lists of sentences
-    :return: dictionary abstracts to sciBERT embeddings
+    :param sentences: list of sentences
+    :return: dictionary of sentences to sciBERT embeddings
+    """
+    tokenizer = AutoTokenizer.from_pretrained('allenai/scibert_scivocab_uncased')
+    model = AutoModel.from_pretrained('allenai/scibert_scivocab_uncased')
+
+    print("Processing {} sentences".format(len(sentences)))
+
+    ######Build Vectors######################
+    sentences_to_embeddings = {}
+
+    for sentence in tqdm(sentences):
+        tokenized = torch.tensor([tokenizer.encode(sentence)])  # .cuda()
+        hidden_states, cls_emb = model(tokenized)
+        sentences_to_embeddings[sentence] = torch.sum(hidden_states, 1).view(-1)
+
+    return sentences_to_embeddings
+
+
+def build_scibert_embeds_paragraphs(paragraphs):
+    """
+    :param paragraphs: list of lists of sentences
+    :return: dictionary paragraphs to sciBERT embeddings
     """
     tokenizer = AutoTokenizer.from_pretrained('allenai/scibert_scivocab_uncased')
     model = AutoModel.from_pretrained('allenai/scibert_scivocab_uncased')
     
-    print("Processing {} papers".format(len(abstracts)))
+    print("Processing {} papers".format(len(paragraphs)))
 
     ######Build Vectors######################
     vector_representation = []
-    for a in tqdm(abstracts):
+    for a in tqdm(paragraphs):
         all_sentence_embeds = []
         # print(a)
         for sentence in a:
@@ -44,29 +65,74 @@ def build_scibert_embeds(abstracts):
         abstract_embeddings = torch.stack(all_sentence_embeds)
         vector_representation.append(torch.sum(abstract_embeddings,axis=0).data.numpy())
 
-    text_to_embeddings = {" ".join(a):v for a,v in zip(abstracts,vector_representation)}
+    text_to_embeddings = {" ".join(a): v for a, v in zip(paragraphs, vector_representation)}
 
     return text_to_embeddings
 
 
-def build_scibert_embeds_tf_idf(abstracts):
+def build_scibert_embeds_documents_avg(documents):
     """
-    :param abstracts: list of lists of sentences
-    :return: dictionary abstracts to sciBERT embeddings with tfidf weights
+    :param documents: list of lists of lists of sentences
+    :return: dictionaries representing sentences to embeddings, paragraphs to embeddings, and documents to embeddings
+    """
+    sentences = [sentence for document in documents for paragraph in document for sentence in paragraph]
+    sentences_to_embeddings = build_scibert_embeds_sentences(sentences)
+    documents_to_embeddings = {}
+    paragraphs_to_embeddings = {}
+    for document in documents:
+        all_paragraph_embeds = []
+        for paragraph in document:
+            all_sentence_embeds = []
+            for sentence in paragraph:
+                all_sentence_embeds.append(sentences_to_embeddings[sentence])
+            paragraph_embedding = torch.mean(torch.stack(all_sentence_embeds), axis=0)
+            all_paragraph_embeds.append(paragraph_embedding)
+            paragraphs_to_embeddings[" ".join(paragraph)] = paragraph_embedding.data.numpy()
+        document_embedding = torch.mean(torch.stack(all_paragraph_embeds), axis=0)
+        paragraph_texts = [" ".join(paragraph) for paragraph in document]
+        documents_to_embeddings[" ".join(paragraph_texts)] = document_embedding.data.numpy()
+    return documents_to_embeddings, paragraphs_to_embeddings, sentences_to_embeddings
+
+
+## TODO: Finish function
+def build_scibert_embeds_tfidf_sentences(sentences):
+    """
+    :param sentences: list of sentences
+    :return: dictionary sentences to sciBERT embeddings with tfidf weights
+     """
+    tokenizer = AutoTokenizer.from_pretrained('allenai/scibert_scivocab_uncased')
+    model = AutoModel.from_pretrained('allenai/scibert_scivocab_uncased')
+
+    print("Processing {} papers".format(len(sentences)))
+
+    vectorizer = TfidfVectorizer()
+
+    corpus = [" ".join(tokenizer.tokenize(s)) for s in sentences]
+    all_sentence_embeds = []
+    X = vectorizer.fit_transform(corpus)
+    words_to_index = {w: i for i, w in enumerate(vectorizer.get_feature_names())}
+
+    pass
+
+
+def build_scibert_embeds_tfidf_paragraphs(paragraphs):
+    """
+    :param paragraphs: list of lists of sentences
+    :return: dictionary paragraphs to sciBERT embeddings with tfidf weights
     """
     tokenizer = AutoTokenizer.from_pretrained('allenai/scibert_scivocab_uncased')
     model = AutoModel.from_pretrained('allenai/scibert_scivocab_uncased')
     
-    print("Processing {} papers".format(len(abstracts)))
+    print("Processing {} papers".format(len(paragraphs)))
 
     vectorizer = TfidfVectorizer()
 
-    corpus = [" ".join([" ".join(tokenizer.tokenize(s)) for s in a]) for a in abstracts]
+    corpus = [" ".join([" ".join(tokenizer.tokenize(s)) for s in a]) for a in paragraphs]
     all_sentence_embeds = []
     X = vectorizer.fit_transform(corpus)
     words_to_index = {w:i for i,w in enumerate(vectorizer.get_feature_names())}  
-    with tqdm(total=len(abstracts)) as pbar:
-        for tfidf_score,text in tqdm(zip(X,abstracts)):
+    with tqdm(total=len(paragraphs)) as pbar:
+        for tfidf_score,text in tqdm(zip(X,paragraphs)):
             tfidf_score = tfidf_score.toarray()
             for sentence in text:
                 tokenized = tokenizer.tokenize(sentence)
@@ -90,6 +156,6 @@ def build_scibert_embeds_tf_idf(abstracts):
                 all_sentence_embeds.append(new_hidden_states.view(-1).data.numpy())
             pbar.update(1)
 
-    text_to_embeddings = {" ".join(a):v for a,v in zip(abstracts, all_sentence_embeds)}
+    text_to_embeddings = {" ".join(a):v for a,v in zip(paragraphs, all_sentence_embeds)}
 
     return text_to_embeddings
