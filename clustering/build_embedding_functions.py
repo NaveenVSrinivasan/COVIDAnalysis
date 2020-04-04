@@ -38,7 +38,7 @@ def build_scibert_embeds_sentences(sentences):
     for sentence in tqdm(sentences):
         tokenized = torch.tensor([tokenizer.encode(sentence)])  # .cuda()
         hidden_states, cls_emb = model(tokenized)
-        sentences_to_embeddings[sentence] = torch.sum(hidden_states, 1).view(-1)
+        sentences_to_embeddings[sentence] = torch.sum(hidden_states, 1).view(-1).data.numpy()
 
     return sentences_to_embeddings
 
@@ -84,7 +84,7 @@ def build_scibert_embeds_documents_avg(documents):
         for paragraph in document:
             all_sentence_embeds = []
             for sentence in paragraph:
-                all_sentence_embeds.append(sentences_to_embeddings[sentence])
+                all_sentence_embeds.append(torch.tensor(sentences_to_embeddings[sentence]))
             paragraph_embedding = torch.mean(torch.stack(all_sentence_embeds), axis=0)
             all_paragraph_embeds.append(paragraph_embedding)
             paragraphs_to_embeddings[" ".join(paragraph)] = paragraph_embedding.data.numpy()
@@ -92,27 +92,6 @@ def build_scibert_embeds_documents_avg(documents):
         paragraph_texts = [" ".join(paragraph) for paragraph in document]
         documents_to_embeddings[" ".join(paragraph_texts)] = document_embedding.data.numpy()
     return documents_to_embeddings, paragraphs_to_embeddings, sentences_to_embeddings
-
-
-## TODO: Finish function
-def build_scibert_embeds_tfidf_sentences(sentences):
-    """
-    :param sentences: list of sentences
-    :return: dictionary sentences to sciBERT embeddings with tfidf weights
-     """
-    tokenizer = AutoTokenizer.from_pretrained('allenai/scibert_scivocab_uncased')
-    model = AutoModel.from_pretrained('allenai/scibert_scivocab_uncased')
-
-    print("Processing {} papers".format(len(sentences)))
-
-    vectorizer = TfidfVectorizer()
-
-    corpus = [" ".join(tokenizer.tokenize(s)) for s in sentences]
-    all_sentence_embeds = []
-    X = vectorizer.fit_transform(corpus)
-    words_to_index = {w: i for i, w in enumerate(vectorizer.get_feature_names())}
-
-    pass
 
 
 def build_scibert_embeds_tfidf_paragraphs(paragraphs):

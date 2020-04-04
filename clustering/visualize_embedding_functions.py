@@ -10,6 +10,9 @@ from sklearn.metrics import silhouette_score
 from sklearn.metrics.pairwise import cosine_similarity
 from tqdm import tqdm
 from transformers import *
+from operator import itemgetter
+
+from build_embedding_functions import *
 
 
 class Reduction(Enum):
@@ -87,6 +90,14 @@ def print_best_matches(text_to_embedding):
         print("\n")
 
 
+def search_top_five(text_embedding, text_to_embedding_dict, num_keys=5):
+    distances = {}
+    for comp in text_to_embedding_dict:
+        distances[comp] = cosine_similarity(np.reshape(text_embedding, (1, -1)), np.reshape(text_to_embedding_dict[comp],
+                                                                                         (1, -1)))
+    return dict(sorted(distances.items(), key=itemgetter(1))[-num_keys:])
+
+
 def calculate_num_clusters(embeddings, kmax: int = 30):
     """
     :param embeddings: matrix of textual embeddings
@@ -99,7 +110,7 @@ def calculate_num_clusters(embeddings, kmax: int = 30):
     for k in range(2, kmax+1):
       kmeans = KMeans(n_clusters=k).fit(embs)
       labels = kmeans.labels_
-      sil.append((k, silhouette_score(embs, labels, metric = 'euclidean')))
+      sil.append((k, silhouette_score(embs, labels, metric='euclidean')))
 
     print(sil)
     return max(sil, key=lambda x: x[1])
