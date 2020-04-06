@@ -85,9 +85,14 @@ if __name__ == "__main__":
         print("-------Retrieving Texts-------")
         texts = None
         if args.use_text == Text.ABSTRACTS:
-            texts = extract_abstracts(args.extraction_dir, remove_ints=True)
+            texts = extract_abstracts('../data/biorxiv_medrxiv/biorxiv_medrxiv/', remove_ints=True)
         elif args.use_text == Text.TITLES:
             texts = extract_titles(args.extraction_dir)
+        else:
+            with open("path_to_json_file") as json_file:
+                raw_title_to_abstracts = json.load(json_file)
+            texts = extract_titles(raw_title_to_abstracts)
+
 
         print("-------Constructing Embeddings-------")
         text_to_embeddings = None
@@ -99,7 +104,7 @@ if __name__ == "__main__":
             text_to_embeddings = build_tfidf_embeds(texts)
         elif args.embedding_type == Embedding.MESH:
             with open('../mesh/mesh_descriptors.txt','r') as mesh_file:
-                features = set(mesh_file.readlines())
+                features = set([x.strip() for x in mesh_file.readlines()])
             text_to_embeddings = build_scibert_embeds_mesh_paragraphs(texts,features)
 
         print("-------Writing Embeddings File-------")
@@ -116,12 +121,12 @@ if __name__ == "__main__":
     # run_elbow(text_to_embeddings)
     # num_clusters,value = calculate_num_clusters([v for _,v in text_to_embeddings.items()],kmax=30) #calculate the number of clusters using siloutte score
 
-    text, clusters = visualize_embeddings(text_to_embeddings, num_clusters=15, reduce_fn=Reduction.TSNE,
-                                          write_to_file=False, file_name='embeddings_all') #visualize embeddings and write the reduced data to tsv file for visualizer
+    text, clusters = visualize_embeddings(text_to_embeddings, num_clusters=5, reduce_fn=Reduction.TSNE,
+                                          write_to_file=True, file_name='embeddings_mesh') #visualize embeddings and write the reduced data to tsv file for visualizer
     #To visualize, change file in visualizer to this file location
 
     extract_cluster_names(text,clusters)
-    print_best_matches(text_to_embeddings) #for every abstract, print the best match
+    # print_best_matches(text_to_embeddings) #for every abstract, print the best match
   
     # print(num_clusters,value)
 

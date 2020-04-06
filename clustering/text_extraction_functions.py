@@ -39,6 +39,7 @@ def extract_abstracts(directory, remove_ints=False, use_titles=True):
             all_text = all_text.replace("All rights reserved. No reuse allowed without permission.","")
             if "author/funder." in all_text:
                 all_text = all_text[all_text.find("author/funder.")+len("author/funder."):]
+
             sentences = [s for s in sent_detector.tokenize(all_text.strip()) if "author/funder." not in s and len(s.split()) > 1]
 
             if remove_ints:
@@ -48,6 +49,27 @@ def extract_abstracts(directory, remove_ints=False, use_titles=True):
 
             if len(sentences) > 0:
                 abstracts.append(sentences)
+
+    print("ABSTRACTS TOTAL:",len(abstracts))
+    return abstracts
+
+def extract_abstracts_precleaned(raw_abstracts,use_titles=True):
+    """
+    :param raw_abstracts: dict from title to abtract
+    :param use_titles: if titles included in abstract pull
+    :return: list of abstracts split by sentence
+    """
+    sent_detector = nltk.data.load('tokenizers/punkt/english.pickle')
+    abstracts = []
+
+    for title,abstract in raw_abstracts.items():
+        if use_titles:
+            abstract = title +". "+abstract
+
+        sentences = [s for s in sent_detector.tokenize(abstract) if len(s.split()) > 0]
+
+        if len(sentences) > 0:
+            abstracts.append(sentences)
 
     print("ABSTRACTS TOTAL:",len(abstracts))
     return abstracts

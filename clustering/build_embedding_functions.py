@@ -157,13 +157,16 @@ def build_scibert_embeds_mesh_paragraphs(paragraphs,text_features):
     all_sentence_embeds = []
     # X = vectorizer.fit_transform(corpus)
     # words_to_index = {w:i for i,w in enumerate(vectorizer.get_feature_names())}  
+
     with tqdm(total=len(paragraphs)) as pbar:
-        for text in tqdm(paragraphs):
+        for text in tqdm(paragraphs[:100]):
             for sentence in text:
                 tokenized = tokenizer.tokenize(sentence)
                 weights = []
                 for w in tokenized:
+                    # print(w)
                     if w in text_features:
+                        # print("\tFOUND")
                         weights.append(1.0) #tfidf_score[0][words_to_index[w]])
                     else:
                         weights.append(0.0)
