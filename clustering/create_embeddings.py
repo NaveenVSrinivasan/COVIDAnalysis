@@ -87,7 +87,7 @@ if __name__ == "__main__":
         print("-------Retrieving Texts-------")
         texts = None
         if args.use_text == Text.ABSTRACTS:
-            texts = extract_abstracts('../data/biorxiv_medrxiv/biorxiv_medrxiv/', remove_ints=True)
+            texts = extract_abstracts(args.extraction_dir, remove_ints=True)
         elif args.use_text == Text.TITLES:
             texts = extract_titles(args.extraction_dir)
         else:
