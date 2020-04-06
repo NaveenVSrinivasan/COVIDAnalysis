@@ -53,20 +53,23 @@ def extract_abstracts(directory, remove_ints=False, use_titles=True):
     print("ABSTRACTS TOTAL:",len(abstracts))
     return abstracts
 
-def extract_abstracts_precleaned(raw_abstracts,use_titles=True):
+def extract_abstracts_precleaned(use_titles=True):
     """
     :param raw_abstracts: dict from title to abtract
     :param use_titles: if titles included in abstract pull
     :return: list of abstracts split by sentence
     """
+    with open("title_to_abstract_mapping.json") as json_file:
+        raw_abstracts = json.load(json_file)
+
     sent_detector = nltk.data.load('tokenizers/punkt/english.pickle')
     abstracts = []
 
-    for title,abstract in raw_abstracts.items():
+    for title, abstract in raw_abstracts.items():
         if use_titles:
-            abstract = title +". "+abstract
+            abstract = [title] + abstract
 
-        sentences = [s for s in sent_detector.tokenize(abstract) if len(s.split()) > 0]
+        sentences = [sent_detector.tokenize(sentence) for sentence in abstract if len(sentence.split()) > 0]
 
         if len(sentences) > 0:
             abstracts.append(sentences)

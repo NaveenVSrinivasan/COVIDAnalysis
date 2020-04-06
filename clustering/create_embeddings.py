@@ -87,13 +87,9 @@ if __name__ == "__main__":
         print("-------Retrieving Texts-------")
         texts = None
         if args.use_text == Text.ABSTRACTS:
-            texts = extract_abstracts(args.extraction_dir, remove_ints=True)
+            texts = extract_abstracts_precleaned(use_titles=True)
         elif args.use_text == Text.TITLES:
             texts = extract_titles(args.extraction_dir)
-        else:
-            with open("path_to_json_file") as json_file:
-                raw_title_to_abstracts = json.load(json_file)
-            texts = extract_titles(raw_title_to_abstracts)
 
 
         print("-------Constructing Embeddings-------")
@@ -127,7 +123,7 @@ if __name__ == "__main__":
                                           write_to_file=True, file_name='embeddings_mesh') #visualize embeddings and write the reduced data to tsv file for visualizer
     #To visualize, change file in visualizer to this file location
 
-    extract_cluster_names(text,clusters)
+    extract_cluster_names(text, clusters)
     # print_best_matches(text_to_embeddings) #for every abstract, print the best match
   
     # print(num_clusters,value)
