@@ -15,7 +15,7 @@ def build_tfidf_embeds_paragraphs(paragraphs):
 
     print("Processing {} papers".format(len(paragraphs)))
 
-    corpus = [" ".join(tokenizer.tokenize(s)) for s in a]
+    corpus = [" ".join(tokenizer.tokenize(s)) for abstract in paragraphs for s in abstract]
     X = vectorizer.fit_transform(corpus)
     text_to_embeddings = {" ".join(a): np.asarray(v).flatten() for a, v in zip(paragraphs, X.todense())}
 

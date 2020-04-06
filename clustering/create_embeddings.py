@@ -91,6 +91,7 @@ if __name__ == "__main__":
         elif args.use_text == Text.TITLES:
             texts = extract_titles(args.extraction_dir)
 
+        texts = texts[:100]
 
         print("-------Constructing Embeddings-------")
         text_to_embeddings = None
