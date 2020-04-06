@@ -48,6 +48,8 @@ def extract_abstracts(directory, remove_ints=False, use_titles=True):
 
             if len(sentences) > 0:
                 abstracts.append(sentences)
+
+    print("ABSTRACTS TOTAL:",len(abstracts))
     return abstracts
 
 

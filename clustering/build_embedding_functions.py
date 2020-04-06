@@ -158,8 +158,7 @@ def build_scibert_embeds_mesh_paragraphs(paragraphs,text_features):
     # X = vectorizer.fit_transform(corpus)
     # words_to_index = {w:i for i,w in enumerate(vectorizer.get_feature_names())}  
     with tqdm(total=len(paragraphs)) as pbar:
-        for tfidf_score,text in tqdm(zip(X,paragraphs)):
-            tfidf_score = tfidf_score.toarray()
+        for text in tqdm(paragraphs):
             for sentence in text:
                 tokenized = tokenizer.tokenize(sentence)
                 weights = []
@@ -171,6 +170,7 @@ def build_scibert_embeds_mesh_paragraphs(paragraphs,text_features):
 
                 weights = torch.tensor(weights)
                 # weights = weights / torch.sum(weights) if torch.sum(weights) > 0 else weights
+
                 # print(weights)
 
                 hidden_states,cls_emb = model(torch.tensor([tokenizer.encode(sentence,add_special_tokens=False)]))
