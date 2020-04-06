@@ -159,7 +159,7 @@ def build_scibert_embeds_mesh_paragraphs(paragraphs,text_features):
     # words_to_index = {w:i for i,w in enumerate(vectorizer.get_feature_names())}  
 
     with tqdm(total=len(paragraphs)) as pbar:
-        for text in tqdm(paragraphs[:100]):
+        for text in tqdm(paragraphs):
             for sentence in text:
                 tokenized = tokenizer.tokenize(sentence)
                 weights = []
