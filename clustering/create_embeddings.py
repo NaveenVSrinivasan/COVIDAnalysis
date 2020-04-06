@@ -1,5 +1,5 @@
 from argparse import ArgumentParser
-from enum import Enum
+import enum
 
 from build_embedding_functions import *
 from text_extraction_functions import *
@@ -7,7 +7,7 @@ from visualize_embedding_functions import *
 import json
 
 
-class Embedding(Enum):
+class Embedding(enum.Enum):
     SCIBERT = "SCIBERT"
     SCIBERT_TFIDF = "SCIBERT_TF_IDF"
     TFIDF = "TFIDF"
@@ -24,11 +24,11 @@ class Embedding(Enum):
             raise ValueError()
 
 
-class Text(Enum):
-    ABSTRACTS = "Abstracts"
-    TITLES = "Titles"
-    BODY_TEXTS = "Body_texts"
-    PARAGRAPHS = "Paragraphs"
+class Text(enum.Enum):
+    ABSTRACTS = "ABSTRACTS"
+    TITLES = "TITLES"
+    BODY_TEXTS = "BODY_TEXTS"
+    PARAGRAPHS = "PARAGRAPHS"
 
     def __str__(self):
         return self.name
@@ -75,6 +75,7 @@ if __name__ == "__main__":
                         type=str)
 
     args = parser.parse_args()
+    text_to_embeddings = None
 
     if args.load_file:
         print("-------Loading Embeddings File-------")
@@ -94,9 +95,9 @@ if __name__ == "__main__":
         if args.embedding_type == Embedding.SCIBERT:
             text_to_embeddings = build_scibert_embeds_paragraphs(texts)
         elif args.embedding_type == Embedding.SCIBERT_TFIDF:
-            text_to_embeddings = build_scibert_embeds_tf_idf(texts)
+            text_to_embeddings = build_scibert_embeds_tfidf_paragraphs(texts)
         elif args.embedding_type == Embedding.TFIDF:
-            text_to_embeddings = build_tfidf_embeds(texts)
+            text_to_embeddings = build_tfidf_embeds_paragraphs(texts)
         elif args.embedding_type == Embedding.MESH:
             with open('../mesh/mesh_descriptors.txt','r') as mesh_file:
                 features = set(mesh_file.readlines())
