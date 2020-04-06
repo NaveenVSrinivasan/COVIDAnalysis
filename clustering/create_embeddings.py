@@ -46,7 +46,7 @@ if __name__ == "__main__":
 
     parser.add_argument('--extraction_dir', '-extraction_dir',
                         help='extraction directory',
-                        default='../../CORD-19-research-challenge/biorxiv_medrxiv/biorxiv_medrxiv',
+                        default='../../CORD-19-research-challenge/',
                         type=str)
 
     parser.add_argument('--use_text', '-use_text',
@@ -75,6 +75,7 @@ if __name__ == "__main__":
                         type=str)
 
     args = parser.parse_args()
+
     text_to_embeddings = None
 
     if args.load_file:
