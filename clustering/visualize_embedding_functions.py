@@ -90,7 +90,7 @@ def print_best_matches(text_to_embedding):
         print("\n")
 
 
-def search_top_five(text_embedding, text_to_embedding_dict, num_keys=5):
+def search_top(text_embedding, text_to_embedding_dict, num_keys=5):
     distances = {}
     for comp in text_to_embedding_dict:
         distances[comp] = cosine_similarity(np.reshape(text_embedding, (1, -1)), np.reshape(text_to_embedding_dict[comp],
