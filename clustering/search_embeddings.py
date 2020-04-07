@@ -46,5 +46,10 @@ if __name__ == "__main__":
 
     var_embedding = list(var_embedding.values())[0]
 
-    print(search_top(var_embedding, text_to_embeddings, args.num_top_abstracts))
+    top = search_top(var_embedding, text_to_embeddings, args.num_top_abstracts)
+
+    for key in top:
+        print(top[key], ' : ', key)
+
+
 

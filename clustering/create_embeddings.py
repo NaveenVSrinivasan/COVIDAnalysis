@@ -118,7 +118,7 @@ if __name__ == "__main__":
     # run_elbow(text_to_embeddings)
     # num_clusters,value = calculate_num_clusters([v for _,v in text_to_embeddings.items()],kmax=30) #calculate the number of clusters using siloutte score
 
-    text, clusters = visualize_embeddings(text_to_embeddings, num_clusters=5, reduce_fn=Reduction.TSNE,
+    text, clusters = visualize_embeddings(text_to_embeddings, num_clusters=10, reduce_fn=Reduction.TSNE,
                                           write_to_file=True, file_name='embeddings_mesh') #visualize embeddings and write the reduced data to tsv file for visualizer
     #To visualize, change file in visualizer to this file location
 
