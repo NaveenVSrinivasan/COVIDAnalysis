@@ -122,7 +122,7 @@ def build_scibert_embeds_tfidf_paragraphs(paragraphs):
     with tqdm(total=len(paragraphs)) as pbar:
 
         for tfidf_score,text in tqdm(zip(X,paragraphs)):
-            # try:
+            try:
                 # print(text)
                 all_sentence_embeds = []
                 tfidf_score = tfidf_score.toarray()
@@ -156,8 +156,8 @@ def build_scibert_embeds_tfidf_paragraphs(paragraphs):
                 vector_representation.append(torch.sum(paragraph_embeddings,axis=0).data.numpy())
                 paragraphs_.append(text)
                 pbar.update(1)
-            # except?:
-                # pass
+            except:
+                pass
                 # exit()
                 # print(text)
 
@@ -186,7 +186,7 @@ def build_scibert_embeds_mesh_paragraphs(paragraphs,text_features):
 
     with tqdm(total=len(paragraphs)) as pbar:
         for text in tqdm(paragraphs):
-            # try:
+            try:
                 all_sentence_embeds = []
                 for sentence in text:
                     tokenized = tokenizer.tokenize(sentence)
@@ -215,8 +215,8 @@ def build_scibert_embeds_mesh_paragraphs(paragraphs,text_features):
                 vector_representation.append(torch.sum(paragraph_embeddings,axis=0).data.numpy())
                 paragraphs_.append(text)
                 pbar.update(1)
-            # except:
-            #     print(text)
+            except:
+                 print(text)
 
     text_to_embeddings = {" ".join(a):v for a,v in zip(paragraphs_, vector_representation)}
 
