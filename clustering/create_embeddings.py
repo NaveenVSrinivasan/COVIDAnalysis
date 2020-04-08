@@ -87,8 +87,7 @@ if __name__ == "__main__":
         print("-------Retrieving Texts-------")
         texts = None
         if args.use_text == Text.ABSTRACTS:
-            texts = extract_abstracts_precleaned(use_titles=True)[:50]
-            print(len(texts))
+            texts = extract_abstracts_precleaned(use_titles=True)
         elif args.use_text == Text.TITLES:
             texts = extract_titles(args.extraction_dir)
 
