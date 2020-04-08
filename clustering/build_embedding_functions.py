@@ -3,6 +3,8 @@ import torch
 from tqdm import tqdm
 from transformers import *
 from sklearn.feature_extraction.text import TfidfVectorizer
+import nltk
+from nltk.corpus import stopwords
 
 
 def build_tfidf_embeds_paragraphs(paragraphs):
@@ -109,17 +111,19 @@ def build_scibert_embeds_tfidf_paragraphs(paragraphs):
     
     print("Processing {} papers".format(len(paragraphs)))
 
-    vectorizer = TfidfVectorizer()
+    vectorizer = TfidfVectorizer(stop_words=set(stopwords.words('english')))
 
     corpus = [" ".join([" ".join(tokenizer.tokenize(s)) for s in a]) for a in paragraphs]
     vector_representation = []
     paragraphs_ = []
     X = vectorizer.fit_transform(corpus)
     words_to_index = {w:i for i,w in enumerate(vectorizer.get_feature_names())}
+    print(X.shape)
     with tqdm(total=len(paragraphs)) as pbar:
+
         for tfidf_score,text in tqdm(zip(X,paragraphs)):
-            try:
-                print(text)
+            # try:
+                # print(text)
                 all_sentence_embeds = []
                 tfidf_score = tfidf_score.toarray()
                 for sentence in text:
@@ -128,6 +132,7 @@ def build_scibert_embeds_tfidf_paragraphs(paragraphs):
                     for w in tokenized:
                         if w in words_to_index:
                             weights.append(tfidf_score[0][words_to_index[w]])
+                            # print("found")
                         else:
                             weights.append(0.0)
 
@@ -140,14 +145,24 @@ def build_scibert_embeds_tfidf_paragraphs(paragraphs):
                     # print(hidden_states.size())
                     # print(weights.size())
 
+
+
+
+
                     new_hidden_states = torch.mm(hidden_states.permute((0,2,1)).squeeze(0),weights.reshape(-1,1))
-                    all_sentence_embeds.append(new_hidden_states.view(-1).data.numpy())
+                    all_sentence_embeds.append(new_hidden_states.view(-1))
+                    
+                paragraph_embeddings = torch.stack(all_sentence_embeds)
+                vector_representation.append(torch.sum(paragraph_embeddings,axis=0).data.numpy())
                 paragraphs_.append(text)
                 pbar.update(1)
-            except:
-                print(text)
+            # except?:
+                # pass
+                # exit()
+                # print(text)
 
-    text_to_embeddings = {" ".join(a):v for a,v in zip(paragraphs_, all_sentence_embeds)}
+    text_to_embeddings = {" ".join(a):v for a,v in zip(paragraphs_, vector_representation)}
+    print("NUM:",len(text_to_embeddings.keys()))
 
     return text_to_embeddings
 
@@ -171,7 +186,7 @@ def build_scibert_embeds_mesh_paragraphs(paragraphs,text_features):
 
     with tqdm(total=len(paragraphs)) as pbar:
         for text in tqdm(paragraphs):
-            try:
+            # try:
                 all_sentence_embeds = []
                 for sentence in text:
                     tokenized = tokenizer.tokenize(sentence)
@@ -194,11 +209,14 @@ def build_scibert_embeds_mesh_paragraphs(paragraphs,text_features):
                     # print(weights.size())
 
                     new_hidden_states = torch.mm(hidden_states.permute((0,2,1)).squeeze(0),weights.reshape(-1,1))
-                    all_sentence_embeds.append(new_hidden_states.view(-1).data.numpy())
+                    all_sentence_embeds.append(new_hidden_states.view(-1))
+
+                paragraph_embeddings = torch.stack(all_sentence_embeds)
+                vector_representation.append(torch.sum(paragraph_embeddings,axis=0).data.numpy())
                 paragraphs_.append(text)
                 pbar.update(1)
-            except:
-                print(text)
+            # except:
+            #     print(text)
 
     text_to_embeddings = {" ".join(a):v for a,v in zip(paragraphs_, vector_representation)}
 
