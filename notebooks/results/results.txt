@@ -25,3 +25,34 @@ SCIBERT_TFIDF, 6 clusters found
 ['unknown', 'disease', 'isbn', 'michael', 'press', 'blackwell', '99', 'pages', 'york', 'anesthesia']
 ['health', 'disease', 'data', 'public', 'study', 'diseases', 'risk', 'infectious', 'care', 'outbreak']
 
+NEW MESH, 7 clusters found
+
+['respiratory', 'cov', 'infection', 'coronavirus', 'human', 'samples', 'pcr', 'influenza', 'sars', 'detection']
+['host', 'human', 'new', 'infection', 'based', 'development', 'rna', 'immune', 'may', 'review']
+['patients', 'respiratory', 'infection', 'study', 'clinical', 'influenza', 'children', 'cases', 'infections', 'results']
+['infecciones', 'tratamiento', 'infections', 'chez', 'résumé', 'pacientes', 'cas', 'respiratory', 'respiratorias', 'vrs']
+['rna', 'binding', 'fusion', 'replication', 'cov', 'coronavirus', 'sars', 'activity', 'membrane', 'domain']
+['infection', 'ifn', 'mice', 'expression', 'immune', 'induced', 'infected', 'response', 'human', 'replication']
+['health', 'public', 'data', 'infectious', 'study', 'outbreak', 'epidemic', 'control', 'transmission', 'influenza']
+
+NEW SCIBERT, 6 clusters found
+
+['rna', 'binding', 'coronavirus', 'replication', 'infection', 'cov', 'sars', 'sequence', 'membrane', 'golgi']
+['health', 'public', 'infectious', 'data', 'epidemic', 'model', 'control', 'outbreak', 'china', 'transmission']
+['infection', 'mice', 'expression', 'ifn', 'induced', 'immune', 'infected', 'human', 'specific', 'results']
+['patients', 'respiratory', 'study', 'infection', 'influenza', 'cases', 'children', 'results', 'clinical', '95']
+['respiratory', 'infection', 'pcr', 'cov', 'coronavirus', 'human', 'samples', 'detection', 'sars', 'assay']
+['host', 'infection', 'immune', 'human', 'based', 'rna', 'review', 'new', 'clinical', 'development']
+['patients', 'infection', 'infecciones', 'chez', 'infections', 'diagnóstico', 'risque', 'respiratoire', 'resumen', 'résumé']
+
+NEW SCIBERT TFIDF, 7 clusters found
+
+['patients', 'respiratory', 'infection', 'influenza', 'study', 'children', 'clinical', 'pneumonia', 'acute', 'infections']
+['rna', 'replication', 'binding', 'coronavirus', 'infection', 'gene', 'fusion', 'two', 'membrane', 'domain']
+['human', 'based', 'using', 'detection', 'new', 'used', 'development', 'rna', 'antiviral', 'host']
+['infection', 'cov', 'coronavirus', 'human', 'respiratory', 'sars', 'study', 'pedv', 'samples', 'vaccine']
+['infection', 'mice', 'immune', 'ifn', 'expression', 'induced', 'response', 'human', 'infected', 'responses']
+['unknown', 'appendix', '978', 'abbreviations', 'radiologiques', 'breastfeeding', 'sras', 'virology', 'precautions', 'press']
+['health', 'data', 'public', 'infectious', 'influenza', 'transmission', 'outbreak', 'control', 'study', '19']
+
+
