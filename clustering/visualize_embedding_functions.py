@@ -38,7 +38,7 @@ def reduce_dims(embeddings, reduction: Reduction):
 
 
 def visualize_embeddings(text_to_embedding, reduce_fn: Reduction, num_clusters, write_to_file=False,
-                         file_name="embeddings"):
+                         file_name="embeddings",show=True):
     """
     :param text_to_embedding: dictionary of text to embeddings
     :param reduce_fn: function to reduce dimension of embeddings
@@ -62,9 +62,10 @@ def visualize_embeddings(text_to_embedding, reduce_fn: Reduction, num_clusters, 
             for a,x1,y1,cluster in zip(text,x,y,labels):
                 embedding_file.write(a+"\t{}\t{}\t{}\n".format(x1,y1,cluster))
 
-
-    plt.scatter(x,y)
-    plt.show()
+    if show:
+        plt.clf()
+        plt.scatter(x,y)
+        plt.show()
 
     return text,labels
 
@@ -145,7 +146,9 @@ def run_elbow(text_to_embedding):
     )
 
     visualizer.fit(vector_representation)        # Fit the data to the visualizer
-    visualizer.show() 
+    # visualizer.show() 
+    print("Found a best k of ",visualizer.elbow_value_)
+    return visualizer.elbow_value_
 
 
 def extract_cluster_names(text, labels):
