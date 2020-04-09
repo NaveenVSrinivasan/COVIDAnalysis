@@ -156,7 +156,7 @@ def extract_cluster_names(text, labels):
     for t,l in zip(text,labels):
         label_to_all_text[l]+= " "+t
 
-    vectorizer = TfidfVectorizer(stop_words=stopwords.words('english'))
+    vectorizer = TfidfVectorizer(stop_words=stopwords.words('english')+stopwords.words('spanish'))
     corpus = [t for _,t in sorted(label_to_all_text.items(),key=lambda x: x[0])]
     labels = [label for label,_ in sorted(label_to_all_text.items(),key=lambda x: x[0])]
     X = vectorizer.fit_transform(corpus)
