@@ -142,7 +142,7 @@ def run_elbow(text_to_embedding):
     # Instantiate the clustering model and visualizer
     model = KMeans()
     visualizer = KElbowVisualizer(
-        model, k=(2, 35), metric="silhouette", timings=False,locate_elbow=True
+        model, k=(2, 15), metric="silhouette", timings=False,locate_elbow=True
     )
 
     visualizer.fit(vector_representation)        # Fit the data to the visualizer
