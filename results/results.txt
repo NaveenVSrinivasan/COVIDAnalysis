@@ -1,0 +1,27 @@
+MESH, 7 clusters found
+
+['virus', 'respiratory', 'viruses', 'infection', 'cov', 'pcr', 'human', 'viral', 'coronavirus', 'sars']
+['cells', 'infection', 'virus', 'cell', 'ifn', 'immune', 'mice', 'expression', 'viral', 'induced']
+['virus', 'protein', 'rna', 'viral', 'cells', 'proteins', 'cell', 'binding', 'coronavirus', 'replication']
+['virus', 'viral', 'viruses', 'human', 'based', 'using', 'protein', 'cell', 'used', 'new']
+['patients', 'respiratory', 'infection', 'study', 'virus', 'clinical', 'viral', 'children', 'infections', 'disease']
+['health', 'disease', 'public', 'infectious', 'data', 'diseases', 'influenza', 'outbreak', 'control', 'epidemic']
+['de', 'la', 'en', 'les', 'los', 'las', 'que', 'des', 'el', 'et']
+
+PURE_SCIBERT, 5 clusters found
+
+['health', 'disease', 'public', 'diseases', 'infectious', 'control', 'data', 'outbreak', 'transmission', 'influenza']
+['virus', 'infection', 'respiratory', 'cov', 'coronavirus', 'viruses', 'viral', 'human', 'sars', 'disease']
+['patients', 'respiratory', 'study', 'infection', 'influenza', 'clinical', 'virus', 'children', 'viral', 'cases']
+['virus', 'cells', 'protein', 'viral', 'infection', 'cell', 'rna', 'replication', 'expression', 'proteins']
+['viral', 'viruses', 'virus', 'protein', 'cells', 'disease', 'host', 'cell', 'based', 'rna']
+
+SCIBERT_TFIDF, 6 clusters found
+
+['patients', 'respiratory', 'virus', 'influenza', 'infection', 'infections', 'viral', 'clinical', 'acute', 'children']
+['cells', 'virus', 'cell', 'viral', 'infection', 'immune', 'expression', 'protein', 'human', 'viruses']
+['virus', 'infection', 'cov', 'viruses', 'coronavirus', 'human', 'sars', 'respiratory', 'viral', 'cells']
+['virus', 'protein', 'rna', 'viral', 'cells', 'proteins', 'replication', 'cell', 'viruses', 'gene']
+['unknown', 'disease', 'isbn', 'michael', 'press', 'blackwell', '99', 'pages', 'york', 'anesthesia']
+['health', 'disease', 'data', 'public', 'study', 'diseases', 'risk', 'infectious', 'care', 'outbreak']
+

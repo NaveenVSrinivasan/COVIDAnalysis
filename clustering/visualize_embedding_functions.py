@@ -14,6 +14,13 @@ from operator import itemgetter
 
 from build_embedding_functions import *
 
+LANGUAGES = ['hungarian', 'swedish', 'kazakh', 'norwegian', 'finnish', 'arabic', 'indonesian', 'portuguese', 'turkish', 'azerbaijani', 'slovene', 'spanish', 
+'danish', 'nepali', 'romanian', 'greek', 'dutch', 'tajik', 'german', 'english', 'russian', 'french', 'italian']
+STOP_WORDS = list()
+for language in LANGUAGES: STOP_WORDS.extend(stopwords.words(language))
+ADDITIONAL_STOP_WORDS = ['virus', 'viruses', 'protein', 'proteins', 'cell', 'cells', 'viral', 'disease', 'diseases'] #
+STOP_WORDS.extend(ADDITIONAL_STOP_WORDS)
+
 
 class Reduction(Enum):
     TSNE = 'TSNE'
@@ -142,7 +149,7 @@ def run_elbow(text_to_embedding):
     # Instantiate the clustering model and visualizer
     model = KMeans()
     visualizer = KElbowVisualizer(
-        model, k=(2, 35), metric="silhouette", timings=False,locate_elbow=True
+        model, k=(2, 15), metric="silhouette", timings=False,locate_elbow=True
     )
 
     visualizer.fit(vector_representation)        # Fit the data to the visualizer
@@ -156,7 +163,7 @@ def extract_cluster_names(text, labels):
     for t,l in zip(text,labels):
         label_to_all_text[l]+= " "+t
 
-    vectorizer = TfidfVectorizer(stop_words=stopwords.words('english'))
+    vectorizer = TfidfVectorizer(stop_words=STOP_WORDS)
     corpus = [t for _,t in sorted(label_to_all_text.items(),key=lambda x: x[0])]
     labels = [label for label,_ in sorted(label_to_all_text.items(),key=lambda x: x[0])]
     X = vectorizer.fit_transform(corpus)
