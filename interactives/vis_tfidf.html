@@ -76,36 +76,36 @@
                   // flip order because y-axis origin is upper LEFT
 
               // Define our axes
-              var xAxis = d3.svg.axis()
-                  .scale(xScale)
-                  .orient('bottom');
+//               var xAxis = d3.svg.axis()
+//                   .scale(xScale)
+//                   .orient('bottom');
 
-              var yAxis = d3.svg.axis()
-                  .scale(yScale)
-                  .orient('left');
+//               var yAxis = d3.svg.axis()
+//                   .scale(yScale)
+//                   .orient('left');
 
-              // Add x-axis to the canvas
-              canvas.append("g")
-                  .attr("class", "x axis")
-                  .attr("transform", "translate(0," + height + ")") // move axis to the bottom of the canvas
-                  .call(xAxis)
-                .append("text")
-                  .attr("class", "label")
-                  .attr("x", width) // x-offset from the xAxis, move label all the way to the right
-                  .attr("y", -6)    // y-offset from the xAxis, moves text UPWARD!
-                  .style("text-anchor", "end") // right-justify text
-                  .text("y");
+//               // Add x-axis to the canvas
+//               canvas.append("g")
+//                   .attr("class", "x axis")
+//                   .attr("transform", "translate(0," + height + ")") // move axis to the bottom of the canvas
+//                   .call(xAxis)
+//                 .append("text")
+//                   .attr("class", "label")
+//                   .attr("x", width) // x-offset from the xAxis, move label all the way to the right
+//                   .attr("y", -6)    // y-offset from the xAxis, moves text UPWARD!
+//                   .style("text-anchor", "end") // right-justify text
+//                   .text("y");
 
-              // Add y-axis to the canvas
-              canvas.append("g")
-                  .attr("class", "y axis") // .orient('left') took care of axis positioning for us
-                  .call(yAxis)
-                .append("text")
-                  .attr("class", "label")
-                  .attr("transform", "rotate(-90)") // although axis is rotated, text is not
-                  .attr("y", 15) // y-offset from yAxis, moves text to the RIGHT because it's rotated, and positive y is DOWN
-                  .style("text-anchor", "end")
-                  .text("x");
+//               // Add y-axis to the canvas
+//               canvas.append("g")
+//                   .attr("class", "y axis") // .orient('left') took care of axis positioning for us
+//                   .call(yAxis)
+//                 .append("text")
+//                   .attr("class", "label")
+//                   .attr("transform", "rotate(-90)") // although axis is rotated, text is not
+//                   .attr("y", 15) // y-offset from yAxis, moves text to the RIGHT because it's rotated, and positive y is DOWN
+//                   .style("text-anchor", "end")
+//                   .text("x");
 
               // Add the tooltip container to the vis container
               // it's invisible and its position/contents are defined during mouseover
