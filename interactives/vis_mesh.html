@@ -118,7 +118,7 @@
                   var color = colorScale(5);
                   var html  = d.text + "<br/>" +
                               "<span style='color:" + color + ";'>"  + "</span><br/>" +
-                              "<b>" + d.y + "</b> y, <b/>" + d.x + "</b> x";
+                             "<b> Cluster #" + d.cluster+ "</b>";
 
                   tooltip.html(html)
                       .style("left", (d3.event.pageX + 15) + "px")
