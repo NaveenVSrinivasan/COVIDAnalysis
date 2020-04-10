@@ -35,7 +35,7 @@ var canvas = d3.select("#vis-container").append("svg")
 var colorScale = d3.scale.category20();
 
 var xScale = d3.scale.linear()
-     .domain([-50,50 ])
+     .domain([-100,100 ])
       .range([0, width]);
 
     // .domain([ d3.min(data, function(d) { return d.y; }) - 1,
