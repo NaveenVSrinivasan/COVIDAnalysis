@@ -1,6 +1,6 @@
 # COVIDAnalysis
 
-Info; https://www.kaggle.com/emilymu/cord19-analysis-scibert-embeddings-on-mesh-words
+Info: https://www.kaggle.com/emilymu/cord19-analysis-scibert-embeddings-on-mesh-words
 
 
 SQL_clean is the data-processing SQL pipeline forked from: https://github.com/neuml/cord19q
